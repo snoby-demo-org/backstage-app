@@ -176,6 +176,19 @@ auth:
   providers:
     # See https://backstage.io/docs/auth/guest/provider
     guest: {}
+    # GitHub OAuth — enables GitHub Actions / Insights / README panes for
+    # signed-in users. Credentials supplied via env (AUTH_GITHUB_CLIENT_ID /
+    # AUTH_GITHUB_CLIENT_SECRET), synced from Infisical — never in git.
+    github:
+      development:
+        clientId: ${AUTH_GITHUB_CLIENT_ID}
+        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+        signIn:
+          resolvers:
+            # Match a signed-in GitHub user to a catalog user entity by username;
+            # fall back to anonymous/allow-all so any org member can sign in even
+            # without an explicit catalog entry.
+            - resolver: usernameMatchingUserEntityName
   # see https://backstage.io/docs/ai/mcp-actions#client-id-metadata-documents
   # to learn more about client id metadata documents
   clientIdMetadataDocuments:
