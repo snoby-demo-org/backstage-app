@@ -156,11 +156,20 @@ proxy:
 # and an external cloud storage when deploying TechDocs for production use-case.
 # https://backstage.io/docs/features/techdocs/how-to-guides#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach
 techdocs:
-  builder: 'local' # Alternatives - 'external'
+  builder: 'external' # CI/CD builds + publishes docs to storage (MinIO/S3)
   generator:
-    runIn: 'docker' # Alternatives - 'local'
+    runIn: 'docker' # unused when builder is external
   publisher:
-    type: 'local' # Alternatives - 'googleGcs' or 'awsS3'. Read documentation for using alternatives.
+    type: 'awsS3'
+    awsS3:
+      # MinIO (self-hosted S3) — endpoint/creds from env for the k8s pod.
+      bucketName: ${TECH_DOCS_BUCKET}
+      region: us-east-1 # MinIO ignores region; AWS SDK requires one
+      s3ForcePathStyle: true
+      endpoint: ${TECH_DOCS_S3_ENDPOINT}
+      credentials:
+        accessKeyId: ${TECH_DOCS_ACCESS_KEY}
+        secretAccessKey: ${TECH_DOCS_SECRET_KEY}
 
 auth:
   # see https://backstage.io/docs/auth/ to learn about auth providers
