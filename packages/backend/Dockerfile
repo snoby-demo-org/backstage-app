@@ -1,60 +1,78 @@
-# This dockerfile builds an image for the backend package.
-# It should be executed with the root of the repo as docker context.
+# Fully containerized multi-stage build. Install + build entirely inside Docker.
 #
-# Before building this image, be sure to have run the following commands in the repo root:
+#   docker build . -f packages/backend/Dockerfile -t ghcr.io/snoby/backstage-app:latest
 #
-# yarn install --immutable
-# yarn tsc
-# yarn build:backend
-#
-# Host build steps (yarn install, yarn build:backend) must use the same
-# Node version as the FROM image below. Mismatched versions break native modules.
-#
-# Once the commands have been run, you can build the image using `yarn build-image`
-#
-# Alternatively, there is also a multi-stage Dockerfile documented here:
-# https://backstage.io/docs/deployment/docker#multi-stage-build
+# Requires BuildKit (DOCKER_BUILDKIT=1) for cache mounts.
 
-FROM node:24-trixie-slim
+# Stage 1 - Create yarn install skeleton layer
+FROM node:22-bookworm-slim AS packages
+WORKDIR /app
+COPY backstage.json package.json yarn.lock ./
+COPY .yarn ./.yarn
+COPY .yarnrc.yml ./
+COPY packages packages
+COPY plugins plugins
+RUN find packages \! -name "package.json" -mindepth 2 -maxdepth 2 -exec rm -rf {} \+
 
-# Install sqlite3 dependencies. You can skip this if you don't use sqlite3 in the image,
-# in which case you should also move better-sqlite3 to "devDependencies" in package.json.
+# Stage 2 - Install dependencies and build packages
+FROM node:22-bookworm-slim AS build
+ENV PYTHON=/usr/bin/python3
+# isolate-vm deps needed by the scaffolder backend
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && \
+    apt-get install -y --no-install-recommends python3 g++ build-essential && \
+    rm -rf /var/lib/apt/lists/*
+# sqlite3 (better-sqlite3) build deps
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && \
     apt-get install -y --no-install-recommends libsqlite3-dev && \
     rm -rf /var/lib/apt/lists/*
-
-# From here on we use the least-privileged `node` user to run the backend.
 USER node
-
-# This should create the app dir as `node`.
-# If it is instead created as `root` then the `tar` command below will fail: `can't create directory 'packages/': Permission denied`.
-# If this occurs, then ensure BuildKit is enabled (`DOCKER_BUILDKIT=1`) so the app dir is correctly created as `node`.
 WORKDIR /app
+COPY --from=packages --chown=node:node /app .
+RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid=1000 \
+    yarn install --immutable
+COPY --chown=node:node . .
+RUN yarn tsc
+RUN yarn --cwd packages/backend build
+RUN mkdir packages/backend/dist/skeleton packages/backend/dist/bundle \
+    && tar xzf packages/backend/dist/skeleton.tar.gz -C packages/backend/dist/skeleton \
+    && tar xzf packages/backend/dist/bundle.tar.gz -C packages/backend/dist/bundle
 
-# Copy files needed by Yarn
-COPY --chown=node:node .yarn ./.yarn
-COPY --chown=node:node .yarnrc.yml ./
-COPY --chown=node:node backstage.json ./
-
-# This switches many Node.js dependencies to production mode.
-ENV NODE_ENV=production
-
-# Copy repo skeleton first, to avoid unnecessary docker cache invalidation.
-# The skeleton contains the package.json of each package in the monorepo,
-# and along with yarn.lock and the root package.json, that's enough to run yarn install.
-COPY --chown=node:node yarn.lock package.json packages/backend/dist/skeleton.tar.gz ./
-RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
-
+# Stage 3 - Build the actual backend image and install production dependencies
+FROM node:22-bookworm-slim
+ENV PYTHON=/usr/bin/python3
+# isolate-vm deps needed by the scaffolder backend
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && \
+    apt-get install -y --no-install-recommends python3 g++ build-essential && \
+    rm -rf /var/lib/apt/lists/*
+# sqlite3 runtime
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    apt-get update && \
+    apt-get install -y --no-install-recommends libsqlite3-0 && \
+    rm -rf /var/lib/apt/lists/*
+USER node
+WORKDIR /app
+# Copy the install deps from the build stage
+COPY --from=build --chown=node:node /app/.yarn ./.yarn
+COPY --from=build --chown=node:node /app/.yarnrc.yml ./
+COPY --from=build --chown=node:node /app/backstage.json ./
+COPY --from=build --chown=node:node /app/yarn.lock /app/package.json /app/packages/backend/dist/skeleton/ ./
 RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid=1000 \
     yarn workspaces focus --all --production && rm -rf "$(yarn cache clean)"
-
-# This will include the examples, if you don't need these simply remove this line
+# Copy the built bundle
+COPY --from=build --chown=node:node /app/packages/backend/dist/bundle/ ./
+# Runtime config + examples
+COPY --chown=node:node app-config*.yaml ./
 COPY --chown=node:node examples ./examples
 
-# Then copy the rest of the backend bundle, along with any other files we might want.
-COPY --chown=node:node packages/backend/dist/bundle.tar.gz app-config*.yaml ./
-RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+ENV NODE_ENV=production
+ENV NODE_OPTIONS="--no-node-snapshot"
 
+EXPOSE 7007
 CMD ["node", "packages/backend", "--config", "app-config.yaml", "--config", "app-config.production.yaml"]

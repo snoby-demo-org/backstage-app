@@ -2,12 +2,11 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: backstage-app
-  description: An example of a Backstage application.
-  # Example for optional annotations
-  # annotations:
-  #   github.com/project-slug: backstage/backstage
-  #   backstage.io/techdocs-ref: dir:.
+  description: Custom-built Backstage developer portal for the viporlab homelab (TechDocs, GitHub Actions, GitHub Insights, Catalog Graph).
+  annotations:
+    github.com/project-slug: snoby/backstage-app
+    backstage.io/techdocs-ref: dir:.
 spec:
   type: website
-  owner: john@example.com
+  owner: snoby
   lifecycle: experimental
