@@ -36,6 +36,9 @@ backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
 );
+// OpenAPI ref processor — enables processing of 'kind: Api' entities
+// (type: openapi) so the catalog recognizes and validates API entities.
+backend.add(import('@backstage/plugin-catalog-backend-module-openapi'));
 
 // See https://backstage.io/docs/features/software-catalog/configuration#subscribing-to-catalog-errors
 backend.add(import('@backstage/plugin-catalog-backend-module-logs'));

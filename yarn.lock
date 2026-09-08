@@ -41,6 +41,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@apidevtools/json-schema-ref-parser@npm:^15.3.5":
+  version: 15.5.2
+  resolution: "@apidevtools/json-schema-ref-parser@npm:15.5.2"
+  dependencies:
+    js-yaml: "npm:^5.2.2"
+    undici: "npm:^6.28.0"
+  peerDependencies:
+    "@types/json-schema": ^7.0.15
+  checksum: 10c0/bf37d0c4f922a099232475c2b45cb18e1450751e1cea17744d6f36007796e527e79dc69a2ff4d2de377a7503a22457b7afd0fdcea6ae7d0b0bc771753c00a1c1
+  languageName: node
+  linkType: hard
+
 "@apidevtools/openapi-schemas@npm:^2.1.0":
   version: 2.1.0
   resolution: "@apidevtools/openapi-schemas@npm:2.1.0"
@@ -2820,6 +2832,22 @@ __metadata:
     "@backstage/plugin-catalog-backend": "npm:^3.9.0"
     "@backstage/plugin-events-node": "npm:^0.4.25"
   checksum: 10c0/8ca8968b65e5203b9dfe04494f7b375d460dfd61a8501b4f17ac7939ae4f68db695d6c1c8f6f91a653884a61d5aca4956a90f6d79cfaf9390a4cfbc2c4e4f9fb
+  languageName: node
+  linkType: hard
+
+"@backstage/plugin-catalog-backend-module-openapi@npm:^0.2.25":
+  version: 0.2.25
+  resolution: "@backstage/plugin-catalog-backend-module-openapi@npm:0.2.25"
+  dependencies:
+    "@apidevtools/json-schema-ref-parser": "npm:^15.3.5"
+    "@backstage/backend-plugin-api": "npm:^1.10.0"
+    "@backstage/catalog-model": "npm:^1.10.0"
+    "@backstage/integration": "npm:^2.1.0"
+    "@backstage/plugin-catalog-common": "npm:^1.1.10"
+    "@backstage/plugin-catalog-node": "npm:^2.2.4"
+    "@backstage/types": "npm:^1.2.2"
+    yaml: "npm:^2.1.1"
+  checksum: 10c0/c499b19d6a481dadad50aae64352a88f243680dfd9e7cbf4bb551c268e768e4e22b5bfebef10d4cabadfa60cd00b9da36f456c463432100b8421e4e7e9a76977
   languageName: node
   linkType: hard
 
@@ -13516,6 +13544,7 @@ __metadata:
     "@backstage/plugin-auth-node": "npm:^0.7.4"
     "@backstage/plugin-catalog-backend": "npm:^3.9.0"
     "@backstage/plugin-catalog-backend-module-logs": "npm:^0.1.25"
+    "@backstage/plugin-catalog-backend-module-openapi": "npm:^0.2.25"
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "npm:^0.2.23"
     "@backstage/plugin-kubernetes-backend": "npm:^0.21.7"
     "@backstage/plugin-mcp-actions-backend": "npm:^0.2.1"
@@ -21303,6 +21332,17 @@ __metadata:
   bin:
     js-yaml: bin/js-yaml.js
   checksum: 10c0/dedd34c2e8fef1d504687f1bc94ed0ee1311a1f78770fa2800352c6d59c635ccf555009d74e9afe529ae62199da2b1ccef30e53dc84dcd8d2d8187c22574bc97
+  languageName: node
+  linkType: hard
+
+"js-yaml@npm:^5.2.2":
+  version: 5.4.1
+  resolution: "js-yaml@npm:5.4.1"
+  dependencies:
+    argparse: "npm:^2.0.1"
+  bin:
+    js-yaml: bin/js-yaml.mjs
+  checksum: 10c0/efe9dfaf222809694d375ad5ecca825561d2432eb55bc0f628911c0dfa4dbce98a71dcbc3252f630208bbdf5f4e9ac363847e4a7f49845b577ae2548b8fcf147
   languageName: node
   linkType: hard
 
@@ -30332,6 +30372,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"undici@npm:^6.28.0":
+  version: 6.28.1
+  resolution: "undici@npm:6.28.1"
+  checksum: 10c0/9c7c277da83972f4f506d564b1d627e3e78aadf866915eab768d96fc70daeae8ff7d87d0cdb32403ae1afdf3aef0f11715e0847d66910fda62822c33c5a7e674
+  languageName: node
+  linkType: hard
+
 "undici@npm:^8.4.1":
   version: 8.10.1
   resolution: "undici@npm:8.10.1"
@@ -31502,7 +31549,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.0.0, yaml@npm:^2.2.1":
+"yaml@npm:^2.0.0, yaml@npm:^2.1.1, yaml@npm:^2.2.1":
   version: 2.9.0
   resolution: "yaml@npm:2.9.0"
   bin:
