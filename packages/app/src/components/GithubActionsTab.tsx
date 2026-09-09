@@ -89,13 +89,16 @@ export const GithubActionsTab = () => {
   const [owner, repo] = annotation.split('/');
 
   // Derive hostname (github.com or enterprise) from the entity source location.
+  // Backstage stores the value as a location string like "url:https://github.com/…"
+  // (or file:/dir:.), so strip any protocol prefix before parsing.
   let hostname: string | undefined;
   const srcUrl = entity.metadata.annotations?.['backstage.io/source-location']
     ?? entity.metadata.annotations?.['backstage.io/managed-by-location'];
   if (srcUrl) {
     try {
-      const parsed = new URL(srcUrl);
-      hostname = parsed.hostname;
+      const clean = srcUrl.replace(/^(url|file|dir):/, '');
+      const parsed = new URL(clean);
+      hostname = parsed.hostname || undefined;
     } catch {
       hostname = undefined;
     }
