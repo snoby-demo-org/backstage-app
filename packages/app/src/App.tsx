@@ -1,39 +1,42 @@
 import { createApp } from '@backstage/frontend-defaults';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
 import { convertLegacyPlugin } from '@backstage/core-compat-api';
-import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
+import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import {
   githubActionsPlugin as legacyGithubActionsPlugin,
-  EntityGithubActionsContent,
   isGithubActionsAvailable,
 } from '@backstage/plugin-github-actions';
 import { navModule } from './modules/nav';
 import { homeModule } from './modules/home';
 
 /**
- * The github-actions plugin (0.6.x) is a legacy v1 frontend-plugin with no
- * `/alpha` export, so v2 feature discovery won't pick it up automatically.
- * convertLegacyPlugin preserves BOTH the legacy plugin's API factories
- * (githubActionsApiRef -> plugin.githubactions.service implementation) AND
- * lets us supply the entity content extension, gated by
- * isGithubActionsAvailable (requires github.com/project-slug annotation).
+ * Custom "Builds" entity tab for GitHub Actions.
+ *
+ * The default plugin renders a sparse 3-column table (Commit Message/Branch/
+ * Status) with no workflow name, run number, or timestamps. We replace it with
+ * a richer table (Workflow / Run # / Branch / Commit / Status / Started /
+ * Duration) rendered from the SAME GithubActionsClient that the legacy plugin
+ * registers. We still use convertLegacyPlugin(legacyGithubActionsPlugin) so the
+ * githubActionsApiRef implementation (plugin.githubactions.service) is
+ * preserved for useApi() to resolve.
  */
+const githubActionsContent = EntityContentBlueprint.make({
+  name: 'builds',
+  params: {
+    path: '/builds',
+    title: 'Builds',
+    filter: isGithubActionsAvailable,
+    loader: async () => {
+      const { GithubActionsTab } = await import('./components/GithubActionsTab');
+      return <GithubActionsTab />;
+    },
+  },
+});
+
 const githubActionsPlugin = convertLegacyPlugin(legacyGithubActionsPlugin, {
-  extensions: [
-    convertLegacyEntityContentExtension(EntityGithubActionsContent, {
-      name: 'github-actions',
-      title: 'GitHub Actions',
-      path: '/github-actions',
-      filter: isGithubActionsAvailable,
-    }),
-  ],
+  extensions: [githubActionsContent],
 });
 
 export default createApp({
-  features: [
-    catalogPlugin,
-    githubActionsPlugin,
-    navModule,
-    homeModule,
-  ],
+  features: [catalogPlugin, githubActionsPlugin, navModule, homeModule],
 });

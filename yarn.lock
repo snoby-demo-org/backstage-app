@@ -13025,6 +13025,7 @@ __metadata:
   dependencies:
     "@backstage-community/plugin-mcp-chat": "npm:^0.10.0"
     "@backstage/cli": "npm:^0.36.5"
+    "@backstage/core-compat-api": "npm:^0.5.14"
     "@backstage/core-components": "npm:^0.18.13"
     "@backstage/core-plugin-api": "npm:^1.12.9"
     "@backstage/frontend-defaults": "npm:^0.5.5"
@@ -13039,6 +13040,7 @@ __metadata:
     "@backstage/plugin-catalog": "npm:^2.0.8"
     "@backstage/plugin-catalog-graph": "npm:^0.6.7"
     "@backstage/plugin-catalog-import": "npm:^0.13.16"
+    "@backstage/plugin-catalog-react": "npm:^3.2.2"
     "@backstage/plugin-github-actions": "npm:^0.6.16"
     "@backstage/plugin-home": "npm:^0.9.9"
     "@backstage/plugin-home-react": "npm:^0.1.41"
@@ -13062,6 +13064,7 @@ __metadata:
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react-dom": "npm:*"
     cross-env: "npm:^7.0.0"
+    luxon: "npm:^3.7.2"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router: "npm:^6.30.2"
@@ -22719,7 +22722,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:^3.0.0, luxon@npm:^3.4.3":
+"luxon@npm:^3.0.0, luxon@npm:^3.4.3, luxon@npm:^3.7.2":
   version: 3.7.2
   resolution: "luxon@npm:3.7.2"
   checksum: 10c0/ed8f0f637826c08c343a29dd478b00628be93bba6f068417b1d8896b61cb61c6deacbe1df1e057dbd9298334044afa150f9aaabbeb3181418ac8520acfdc2ae2
