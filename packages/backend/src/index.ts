@@ -6,6 +6,8 @@
  * Happy hacking!
  */
 
+import './instrumentation';
+
 import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
