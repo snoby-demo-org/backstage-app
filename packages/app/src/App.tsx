@@ -10,15 +10,13 @@ import { navModule } from './modules/nav';
 import { homeModule } from './modules/home';
 
 /**
- * Custom "Builds" entity tab for GitHub Actions.
+ * GitHub Actions entity tab.
  *
- * The default plugin renders a sparse 3-column table (Commit Message/Branch/
- * Status) with no workflow name, run number, or timestamps. We replace it with
- * a richer table (Workflow / Run # / Branch / Commit / Status / Started /
- * Duration) rendered from the SAME GithubActionsClient that the legacy plugin
- * registers. We still use convertLegacyPlugin(legacyGithubActionsPlugin) so the
- * githubActionsApiRef implementation (plugin.githubactions.service) is
- * preserved for useApi() to resolve.
+ * Renders the FULL official plugin component (EntityGithubActionsContent) so we
+ * get the complete drill-down: workflow runs -> jobs -> individual job steps
+ * with per-step logs. We keep convertLegacyPlugin(legacyGithubActionsPlugin) so
+ * the githubActionsApiRef implementation (plugin.githubactions.service) is
+ * preserved. The custom builds tab path/title is kept for continuity.
  */
 const githubActionsContent = EntityContentBlueprint.make({
   name: 'builds',
@@ -27,8 +25,8 @@ const githubActionsContent = EntityContentBlueprint.make({
     title: 'Builds',
     filter: isGithubActionsAvailable,
     loader: async () => {
-      const { GithubActionsTab } = await import('./components/GithubActionsTab');
-      return <GithubActionsTab />;
+      const { EntityGithubActionsContent } = await import('@backstage/plugin-github-actions');
+      return <EntityGithubActionsContent />;
     },
   },
 });
