@@ -1,5 +1,6 @@
 import { createApp } from '@backstage/frontend-defaults';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
+import lokiPlugin from '@snoby-demo-org/backstage-plugin-loki/alpha';
 import { convertLegacyPlugin } from '@backstage/core-compat-api';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import {
@@ -38,5 +39,11 @@ const githubActionsPlugin = convertLegacyPlugin(legacyGithubActionsPlugin, {
 });
 
 export default createApp({
-  features: [catalogPlugin, githubActionsPlugin, navModule, homeModule],
+  features: [
+    catalogPlugin,
+    githubActionsPlugin,
+    lokiPlugin,
+    navModule,
+    homeModule,
+  ],
 });

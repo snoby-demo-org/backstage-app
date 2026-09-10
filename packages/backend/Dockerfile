@@ -16,6 +16,8 @@ RUN find packages \! -name "package.json" -mindepth 2 -maxdepth 2 -exec rm -rf {
 
 # Stage 2 - Install dependencies and build packages
 FROM node:22-bookworm-slim AS build
+ARG YARN_NPM_AUTH_TOKEN
+ENV YARN_NPM_AUTH_TOKEN=$YARN_NPM_AUTH_TOKEN
 ENV PYTHON=/usr/bin/python3
 # isolate-vm deps needed by the scaffolder backend
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
