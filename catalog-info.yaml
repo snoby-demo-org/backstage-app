@@ -4,7 +4,7 @@ metadata:
   name: backstage-app
   description: Custom-built Backstage developer portal for the viporlab homelab (TechDocs, GitHub Actions, GitHub Insights, Catalog Graph).
   annotations:
-    github.com/project-slug: snoby/backstage-app
+    github.com/project-slug: snoby-demo-org/backstage-app
     backstage.io/techdocs-ref: dir:.
 spec:
   type: website

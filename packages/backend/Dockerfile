@@ -1,6 +1,6 @@
 # Fully containerized multi-stage build. Install + build entirely inside Docker.
 #
-#   docker build . -f packages/backend/Dockerfile -t ghcr.io/snoby/backstage-app:latest
+#   docker build . -f packages/backend/Dockerfile -t ghcr.io/snoby-demo-org/backstage-app:latest
 #
 # Requires BuildKit (DOCKER_BUILDKIT=1) for cache mounts.
 

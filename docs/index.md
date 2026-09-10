@@ -23,7 +23,7 @@ yarn dev
 ## Build
 
 ```bash
-docker build . -f packages/backend/Dockerfile -t ghcr.io/snoby/backstage-app:latest
+docker build . -f packages/backend/Dockerfile -t ghcr.io/snoby-demo-org/backstage-app:latest
 ```
 
 ## Deployment
