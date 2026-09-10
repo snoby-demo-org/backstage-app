@@ -90,8 +90,10 @@ export const GithubActionsTab = () => {
 
   // Derive hostname (github.com or enterprise) from the entity source location.
   let hostname: string | undefined;
-  const srcUrl = entity.metadata.annotations?.['backstage.io/source-location']
+  // source-location is a LOCATION STRING (url:<https-url>), not a bare URL.
+  const rawSrcUrl = entity.metadata.annotations?.['backstage.io/source-location']
     ?? entity.metadata.annotations?.['backstage.io/managed-by-location'];
+  const srcUrl = rawSrcUrl?.replace(/^(url|file|dir):/, '');
   if (srcUrl) {
     try {
       const parsed = new URL(srcUrl);
