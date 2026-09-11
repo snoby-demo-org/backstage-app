@@ -144,12 +144,14 @@ integrations:
     #   token: ${GHE_TOKEN}
 
 proxy:
-  ### Example for how to add a proxy endpoint for the frontend.
-  ### A typical reason to do this is to handle HTTPS and CORS for internal services.
-  # endpoints:
-  #   '/test':
-  #     target: 'https://example.com'
-  #     changeOrigin: true
+  ### Loki endpoint so the frontend plugin can query Loki without CORS
+  ### (server-side read, no user auth to Loki).
+  endpoints:
+    '/loki':
+      target: 'http://10.0.0.62:3100'
+      changeOrigin: true
+      # Do not forward Backstage session cookies to Loki.
+      credentials: dangerously-allow-unauthenticated
 
 # Reference documentation http://backstage.io/docs/features/techdocs/configuration
 # Note: After experimenting with basic setup, use CI/CD to generate docs
