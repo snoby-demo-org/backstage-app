@@ -9,6 +9,7 @@ import {
 } from '@backstage/plugin-github-actions';
 import { navModule } from './modules/nav';
 import { homeModule } from './modules/home';
+import { themeModule } from './theme';
 
 /**
  * Custom "Builds" entity tab for GitHub Actions.
@@ -45,5 +46,6 @@ export default createApp({
     lokiPlugin,
     navModule,
     homeModule,
+    themeModule,
   ],
 });
