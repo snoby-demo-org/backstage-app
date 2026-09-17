@@ -45,6 +45,8 @@ RUN mkdir packages/backend/dist/skeleton packages/backend/dist/bundle \
 
 # Stage 3 - Build the actual backend image and install production dependencies
 FROM node:22-bookworm-slim
+ARG YARN_NPM_AUTH_TOKEN
+ENV YARN_NPM_AUTH_TOKEN=$YARN_NPM_AUTH_TOKEN
 ENV PYTHON=/usr/bin/python3
 # isolate-vm deps needed by the scaffolder backend
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
