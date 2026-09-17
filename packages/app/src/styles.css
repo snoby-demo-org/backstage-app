@@ -2,13 +2,25 @@
  * BUI half of the "tighter blue" reskin.
  *
  * Components built on @backstage/ui read --bui-* variables rather than the MUI
- * theme, so the blue palette and compact type are mirrored here. Keep in sync
- * with src/theme/blueTheme.ts. Must be imported after @backstage/ui styles.
+ * theme, so the palette and type are mirrored here from the `tokens` object in
+ * src/theme/blueTheme.ts — change a value there, change it here. Must be
+ * imported after @backstage/ui styles. Stable bui-/Mui- classes only: Backstage
+ * makeStyles names are minified in production builds.
+ *
+ *   1. Typography
+ *   2. Palette — light
+ *   3. Palette — dark
+ *   4. Catalog filter panel
+ *   5. Catalog Graph filter panel
  */
 
+/* 1. Typography ------------------------------------------------------------ */
+
+/* Avenir Next (macOS built-in) → Segoe UI Variable → system UI. Mirrors
+ * `fontFamily` in blueTheme.ts. */
 :root {
-  --bui-font-regular: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --bui-font-regular: 'Avenir Next', 'Segoe UI Variable Text', 'Segoe UI',
+    system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
   --bui-font-size-1: 0.625rem;
   --bui-font-size-2: 0.75rem;
   --bui-font-size-3: 0.8125rem;
@@ -21,7 +33,23 @@
   --bui-radius-4: 0.5rem;
 }
 
+/* 2. Palette — light (tokens.light) --------------------------------------- */
+
 [data-theme-mode='light'] {
+  /* surfaces: cool slate canvas, white cards, recessed panels */
+  --bui-bg-app: #f3f6fa;
+  --bui-bg-neutral-1: #ffffff;
+  --bui-bg-neutral-2: #f3f6fa;
+  --bui-bg-neutral-3: #ffffff;
+  --bui-bg-neutral-4: #f3f6fa;
+  --bui-border-1: #dde4ee;
+  --bui-border-2: #c3cedc;
+
+  /* text: primary is the sidebar navy */
+  --bui-fg-primary: #0f1b2d;
+  --bui-fg-secondary: #4a5a70;
+
+  /* accent blue */
   --bui-accent-bg: #0b6bcb;
   --bui-accent-bg-hover: #0a5cae;
   --bui-accent-bg-disabled: #9cc2ea;
@@ -37,22 +65,121 @@
   --bui-fg-info: #0b6bcb;
   --bui-border-info: #0b6bcb;
   --bui-ring: #0b6bcb;
+
+  /* app-level (non-BUI) tokens */
+  --app-panel: #e9eff6;
+  --app-nav: #0f1b2d;
 }
 
+/* 3. Palette — dark (tokens.dark) ----------------------------------------- */
+
 [data-theme-mode='dark'] {
+  --bui-bg-app: #0f1724;
+  --bui-bg-neutral-1: #172233;
+  --bui-bg-neutral-2: #1d2a3e;
+  --bui-bg-neutral-3: #243349;
+  --bui-bg-neutral-4: #2b3b53;
+  --bui-border-1: #243247;
+  --bui-border-2: #34465f;
+
+  --bui-fg-primary: #e6ecf4;
+  --bui-fg-secondary: #9aa8ba;
+
   --bui-accent-bg: #5aa2f0;
   --bui-accent-bg-hover: #8cc0f7;
   --bui-accent-bg-disabled: #2a4c73;
-  --bui-accent-fg: #0b111b;
+  --bui-accent-fg: #0a101a;
   --bui-accent-fg-disabled: #7d8ea3;
 
   --bui-bg-solid: #5aa2f0;
   --bui-bg-solid-hover: #8cc0f7;
   --bui-bg-solid-pressed: #3f86d6;
   --bui-bg-solid-disabled: #2a4c73;
-  --bui-fg-solid: #0b111b;
+  --bui-fg-solid: #0a101a;
 
   --bui-fg-info: #5aa2f0;
   --bui-border-info: #5aa2f0;
   --bui-ring: #5aa2f0;
+
+  --app-panel: #131d2c;
+  --app-nav: #0a101a;
+}
+
+/* 4. Catalog filter panel ------------------------------------------------- */
+
+/*
+ * CatalogFilterLayout (MUI grid under a BUI Header). Previously the whole grid
+ * was sidebar-navy, which read as a dark island. Now only the filter column is
+ * a recessed slate panel (--app-panel) and the table stays a white card, so the
+ * filters still read as a distinct panel without competing with the nav.
+ */
+.bui-HeaderContent ~ .bui-Container > .MuiGrid-container > .MuiGrid-grid-lg-2 {
+  background-color: var(--app-panel);
+  border: 1px solid var(--bui-border-1);
+  border-radius: var(--bui-radius-4);
+}
+
+/* User-list picker (Personal / My company) Card: defaults to a translucent
+ * grey fill on every page that uses it (catalog, docs). Recolour it as a slate
+ * panel app-wide; inside the catalog filter panel it goes flat instead. */
+.MuiCard-root:has(> .MuiTypography-subtitle2 + .MuiCard-root) {
+  background-color: var(--app-panel);
+  border: 1px solid var(--bui-border-1);
+}
+
+.bui-HeaderContent ~ .bui-Container .MuiGrid-grid-lg-2 > .MuiCard-root {
+  background-color: transparent;
+  border: 0;
+}
+
+/* Table card: flat with a hairline border, matching MuiCard. */
+.bui-HeaderContent ~ .bui-Container > .MuiGrid-container .MuiPaper-elevation2 {
+  box-shadow: none;
+  border: 1px solid var(--bui-border-1);
+}
+
+/* 5. Catalog Graph filter panel ------------------------------------------- */
+
+/*
+ * CatalogGraphPage renders under a nested MUI ThemeProvider, so even its Mui
+ * classes carry a counter suffix (MuiGrid-root-1354) — in production too. Match
+ * on the Mui name with [class*=] and anchor on page structure (Content article
+ * > Grid container > xs-12/lg-2 filter item), never the plugin's makeStyles.
+ * Same recessed slate panel as the catalog filters in section 4.
+ */
+main > article > [class*='MuiGrid-container']
+  > [class*='MuiGrid-grid-xs-12'][class*='MuiGrid-grid-lg-2'] {
+  background-color: var(--app-panel);
+  border: 1px solid var(--bui-border-1);
+  border-radius: var(--bui-radius-4);
+  padding: 12px 16px;
+}
+
+/* Relation chips: default MUI grey reads as a grey island on the slate panel. */
+main > article > [class*='MuiGrid-container']
+  > [class*='MuiGrid-grid-lg-2'] [class*='MuiChip-root'] {
+  background-color: var(--bui-bg-neutral-1);
+  border: 1px solid var(--bui-border-1);
+  color: var(--bui-fg-primary);
+}
+
+/* "Filters" toggle in the content header: selected state defaults to a
+ * translucent grey fill. */
+main > article > [class*='MuiBox-root']:has(+ [class*='MuiGrid-container'] > [class*='MuiGrid-grid-lg-2'])
+  [class*='MuiToggleButton-root'] {
+  color: var(--bui-fg-secondary);
+  border-color: var(--bui-border-1);
+}
+
+main > article > [class*='MuiBox-root']:has(+ [class*='MuiGrid-container'] > [class*='MuiGrid-grid-lg-2'])
+  [class*='MuiToggleButton-root'].Mui-selected {
+  background-color: var(--app-panel);
+  color: var(--bui-fg-primary);
+}
+
+/* Graph card: flat with a hairline border, matching the catalog table card. */
+main > article > [class*='MuiGrid-container']:has(> [class*='MuiGrid-grid-lg-2'])
+  [class*='MuiPaper-elevation1'] {
+  box-shadow: none;
+  border: 1px solid var(--bui-border-1);
 }
