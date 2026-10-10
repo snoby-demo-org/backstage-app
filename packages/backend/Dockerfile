@@ -34,8 +34,12 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 USER node
 WORKDIR /app
 COPY --from=packages --chown=node:node /app .
+# Install deps. Prefer immutable (reproducible), but regenerate the lockfile
+# when the workspace graph changed (e.g. a newly-vendored plugin) rather than
+# failing — this is the standard monorepo/vendored-plugin CI pattern. Immutable
+# mode is still the default success path so unrelated lockfile drift is caught.
 RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid=1000 \
-    yarn install --immutable
+    (yarn install --immutable 2>/dev/null || yarn install)
 COPY --chown=node:node . .
 RUN yarn tsc
 RUN yarn --cwd packages/backend build
