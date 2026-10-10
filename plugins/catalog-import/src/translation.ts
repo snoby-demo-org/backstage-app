@@ -119,7 +119,7 @@ export const catalogImportTranslationRef = createTranslationRef({
     },
     stepPrepareCreatePullRequest: {
       description:
-        "We couldn't find a {{catalogFilename}} at that URL. If your repo already has one, make sure you link to its full path (e.g. https://github.com/ORG/REPO/blob/main/catalog-info.yaml) rather than the repository root. Otherwise, use this form to open a Pull Request that creates one.",
+        "We couldn't find a {{catalogFilename}} in your {{integrationType}} repository at that URL. If it already exists, link to its full path (e.g. https://github.com/ORG/REPO/blob/main/catalog-info.yaml) rather than the repository root. Otherwise, use this form to open a Pull Request that creates one.",
       previewPr: {
         title: 'Preview Pull Request',
         subheader: 'Create a new Pull Request',
