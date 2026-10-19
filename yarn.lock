@@ -3769,7 +3769,7 @@ __metadata:
 
 "@backstage/plugin-scaffolder-backend@patch:@backstage/plugin-scaffolder-backend@npm%3A4.1.0#~/.yarn/patches/@backstage-plugin-scaffolder-backend-npm-4.1.0-b8c0b78265.patch":
   version: 4.1.0
-  resolution: "@backstage/plugin-scaffolder-backend@patch:@backstage/plugin-scaffolder-backend@npm%3A4.1.0#~/.yarn/patches/@backstage-plugin-scaffolder-backend-npm-4.1.0-b8c0b78265.patch::version=4.1.0&hash=6574d4"
+  resolution: "@backstage/plugin-scaffolder-backend@patch:@backstage/plugin-scaffolder-backend@npm%3A4.1.0#~/.yarn/patches/@backstage-plugin-scaffolder-backend-npm-4.1.0-b8c0b78265.patch::version=4.1.0&hash=50dd86"
   dependencies:
     "@backstage/backend-openapi-utils": "npm:^0.7.1"
     "@backstage/backend-plugin-api": "npm:^1.10.0"
@@ -3804,7 +3804,7 @@ __metadata:
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.25.76 || ^4.0.0"
     zod-to-json-schema: "npm:^3.25.1"
-  checksum: 10c0/e3ce99f25595f42232269877dbeff0f5946f823ab0b78cf781cf99a0182f259e0cdb7f152b17ac247c46f52ba5c5cdc9899a1776a8e2cf70783824361f01b898
+  checksum: 10c0/77101842e75a21ec7778123f78552356420598698a4a26651bec3247e804c9ae796740b762e687e93f389cd59d835b61212cbe48b199943f7f0301bcdb4b1f76
   languageName: node
   linkType: hard
 

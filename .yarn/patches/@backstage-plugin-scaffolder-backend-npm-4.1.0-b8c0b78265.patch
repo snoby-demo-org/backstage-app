@@ -1,8 +1,8 @@
 diff --git a/dist/scaffolder/tasks/StorageTaskBroker.cjs.js b/dist/scaffolder/tasks/StorageTaskBroker.cjs.js
-index 3b5adec596f028ef7a7da466052ae172d436fe54..f46a10781f850638374014293a946cf9514406c7 100644
+index 3b5adec596f028ef7a7da466052ae172d436fe54..ec99dd51d697d3cd9cfb81c052591cbcefa06454 100644
 --- a/dist/scaffolder/tasks/StorageTaskBroker.cjs.js
 +++ b/dist/scaffolder/tasks/StorageTaskBroker.cjs.js
-@@ -127,7 +127,16 @@ class TaskManager {
+@@ -127,7 +127,24 @@ class TaskManager {
    async getInitiatorCredentials() {
      const secrets = this.task.secrets;
      if (secrets && secrets.__initiatorCredentials) {
@@ -13,8 +13,16 @@ index 3b5adec596f028ef7a7da466052ae172d436fe54..f46a10781f850638374014293a946cf9
 +      // restricted external tokens (register action NotAllowedError).
 +      // Re-authenticating the token re-derives the full credentials,
 +      // including the allAccessRestrictions map.
++      this.logger.info(`[VIPORLAB-PATCH] token=${parsed && parsed.token ? "present(len" + parsed.token.length + ")" : "MISSING"} auth=${this.auth ? "present" : "UNDEFINED"}`);
 +      if (parsed && parsed.token && this.auth) {
-+        return this.auth.authenticate(parsed.token);
++        try {
++          const creds = await this.auth.authenticate(parsed.token);
++          this.logger.info(`[VIPORLAB-PATCH] re-auth ok, allAccessRestrictions=${creds.allAccessRestrictions ? [...creds.allAccessRestrictions.keys()].join(",") : "MISSING"}`);
++          return creds;
++        } catch (e) {
++          this.logger.error(`[VIPORLAB-PATCH] re-auth failed: ${e.message}`);
++          return parsed;
++        }
 +      }
 +      return parsed;
      }
