@@ -1,30 +1,52 @@
 diff --git a/dist/scaffolder/tasks/StorageTaskBroker.cjs.js b/dist/scaffolder/tasks/StorageTaskBroker.cjs.js
-index 3b5adec596f028ef7a7da466052ae172d436fe54..ec99dd51d697d3cd9cfb81c052591cbcefa06454 100644
+index 3b5adec596f028ef7a7da466052ae172d436fe54..50de595d5f94dbc0b54eb28e89446669fc5d1018 100644
 --- a/dist/scaffolder/tasks/StorageTaskBroker.cjs.js
 +++ b/dist/scaffolder/tasks/StorageTaskBroker.cjs.js
-@@ -127,7 +127,24 @@ class TaskManager {
+@@ -127,7 +127,16 @@ class TaskManager {
    async getInitiatorCredentials() {
      const secrets = this.task.secrets;
      if (secrets && secrets.__initiatorCredentials) {
 -      return JSON.parse(secrets.__initiatorCredentials);
 +      const parsed = JSON.parse(secrets.__initiatorCredentials);
-+      // VIPORLAB PATCH: the serialized credential loses non-enumerable
-+      // allAccessRestrictions, which breaks getPluginRequestToken for
-+      // restricted external tokens (register action NotAllowedError).
-+      // Re-authenticating the token re-derives the full credentials,
-+      // including the allAccessRestrictions map.
-+      this.logger.info(`[VIPORLAB-PATCH] token=${parsed && parsed.token ? "present(len" + parsed.token.length + ")" : "MISSING"} auth=${this.auth ? "present" : "UNDEFINED"}`);
++      // VIPORLAB PATCH: the serialized credential blob can lack a usable
++      // token (external tokens are returned with token=void 0). When a
++      // token IS present, re-authenticate it to re-derive the full
++      // credentials, including the non-enumerable allAccessRestrictions
++      // map that JSON serialization drops.
 +      if (parsed && parsed.token && this.auth) {
-+        try {
-+          const creds = await this.auth.authenticate(parsed.token);
-+          this.logger.info(`[VIPORLAB-PATCH] re-auth ok, allAccessRestrictions=${creds.allAccessRestrictions ? [...creds.allAccessRestrictions.keys()].join(",") : "MISSING"}`);
-+          return creds;
-+        } catch (e) {
-+          this.logger.error(`[VIPORLAB-PATCH] re-auth failed: ${e.message}`);
-+          return parsed;
-+        }
++        return this.auth.authenticate(parsed.token);
 +      }
 +      return parsed;
      }
      if (!this.auth) {
        throw new Error(
+diff --git a/dist/service/router.cjs.js b/dist/service/router.cjs.js
+index b7790defd33d0d0a74484354520364626616113e..c519994290fa0015520f8bf8b868b981048faa01 100644
+--- a/dist/service/router.cjs.js
++++ b/dist/service/router.cjs.js
+@@ -420,7 +420,11 @@ async function createRouter(options) {
+         __initiatorCredentials: JSON.stringify({
+           ...credentials,
+           // credentials.token is nonenumerable and will not be serialized, so we need to add it explicitly
+-          token: credentials.token
++          // VIPORLAB PATCH: for external (static) tokens DefaultAuthService.authenticate
++          // returns token=void 0 by design, so credentials.token alone loses the ability
++          // to re-derive allAccessRestrictions in the task worker. Fall back to the raw
++          // bearer token from the request (stored in the encrypted task secrets column).
++          token: credentials.token ?? (req.headers.authorization || "").replace(/^Bearer\s+/i, "")
+         })
+       };
+       const result = await taskBroker.dispatch({
+@@ -607,7 +611,11 @@ async function createRouter(options) {
+         __initiatorCredentials: JSON.stringify({
+           ...credentials,
+           // credentials.token is nonenumerable and will not be serialized, so we need to add it explicitly
+-          token: credentials.token
++          // VIPORLAB PATCH: for external (static) tokens DefaultAuthService.authenticate
++          // returns token=void 0 by design, so credentials.token alone loses the ability
++          // to re-derive allAccessRestrictions in the task worker. Fall back to the raw
++          // bearer token from the request (stored in the encrypted task secrets column).
++          token: credentials.token ?? (req.headers.authorization || "").replace(/^Bearer\s+/i, "")
+         })
+       };
+       await taskBroker.retry?.({ secrets, taskId });
