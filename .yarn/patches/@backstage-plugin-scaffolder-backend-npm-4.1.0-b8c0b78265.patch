@@ -1,0 +1,22 @@
+diff --git a/dist/scaffolder/tasks/StorageTaskBroker.cjs.js b/dist/scaffolder/tasks/StorageTaskBroker.cjs.js
+index 3b5adec596f028ef7a7da466052ae172d436fe54..f46a10781f850638374014293a946cf9514406c7 100644
+--- a/dist/scaffolder/tasks/StorageTaskBroker.cjs.js
++++ b/dist/scaffolder/tasks/StorageTaskBroker.cjs.js
+@@ -127,7 +127,16 @@ class TaskManager {
+   async getInitiatorCredentials() {
+     const secrets = this.task.secrets;
+     if (secrets && secrets.__initiatorCredentials) {
+-      return JSON.parse(secrets.__initiatorCredentials);
++      const parsed = JSON.parse(secrets.__initiatorCredentials);
++      // VIPORLAB PATCH: the serialized credential loses non-enumerable
++      // allAccessRestrictions, which breaks getPluginRequestToken for
++      // restricted external tokens (register action NotAllowedError).
++      // Re-authenticating the token re-derives the full credentials,
++      // including the allAccessRestrictions map.
++      if (parsed && parsed.token && this.auth) {
++        return this.auth.authenticate(parsed.token);
++      }
++      return parsed;
+     }
+     if (!this.auth) {
+       throw new Error(
