@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { useApi } from '@backstage/core-plugin-api';
+import { fetchApiRef, useApi } from '@backstage/core-plugin-api';
 import { scmAuthApiRef } from '@backstage/integration-react';
 import {
   githubActionsApiRef,
