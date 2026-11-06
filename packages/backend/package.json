@@ -51,6 +51,7 @@
     "@opentelemetry/exporter-prometheus": "0.203.0",
     "@opentelemetry/exporter-trace-otlp-http": "0.203.0",
     "@opentelemetry/sdk-node": "0.203.0",
+    "@snoby-demo-org/backstage-plugin-kargo-backend": "workspace:^",
     "app": "link:../app",
     "better-sqlite3": "^12.0.0",
     "node-gyp": "^10.0.0",

@@ -79,5 +79,6 @@ backend.add(import('@backstage/plugin-mcp-actions-backend'));
 // MCP Chat — in-app AI chat backed by MCP servers + an LLM provider
 // (providers/mcpServers configured under `mcpChat` in app-config).
 backend.add(import('@backstage-community/plugin-mcp-chat-backend'));
+backend.add(import('@snoby-demo-org/backstage-plugin-kargo-backend'));
 
 backend.start();

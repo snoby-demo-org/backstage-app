@@ -252,3 +252,15 @@ permission:
 mcpActions:
   name: 'My Company Backstage' # defaults to "backstage"
   description: 'Tools for managing your software catalog, creating new services from templates, and exploring your developer portal' # optional
+
+kargo:
+  # Vendored plugin @snoby-demo-org/backstage-plugin-kargo-backend.
+  # Same instance the CD side uses (kargo.viporlab.net, Kargo 1.12.5).
+  # skipTLSVerify: the ingress cert is issued by the local cert-manager CA,
+  # which is not in the pod's trust store.
+  instances:
+    - name: viporlab
+      url: https://kargo.viporlab.net
+      adminPassword: ${KARGO_ADMIN_PASSWORD}
+      skipTLSVerify: true
+  cacheTtlSeconds: 10
