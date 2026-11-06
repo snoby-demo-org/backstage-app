@@ -1,6 +1,7 @@
 import { createApp } from '@backstage/frontend-defaults';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
 import lokiPlugin from '@snoby-demo-org/backstage-plugin-loki/alpha';
+import kargoPlugin from '@snoby-demo-org/backstage-plugin-kargo/alpha';
 import { convertLegacyPlugin } from '@backstage/core-compat-api';
 import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import {
@@ -44,6 +45,7 @@ export default createApp({
     catalogPlugin,
     githubActionsPlugin,
     lokiPlugin,
+    kargoPlugin,
     navModule,
     homeModule,
     themeModule,
